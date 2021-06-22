@@ -9,6 +9,7 @@ import UIKit
 
 final class RoverPhotosDataSource: NSObject, UICollectionViewDataSource {
     var reloadAction: (() -> Void)?
+    var loadingImageCount = 0
     
     lazy var photos = [RoverPhotoModel]() {
         didSet { reloadAction?() }
@@ -26,6 +27,8 @@ final class RoverPhotosDataSource: NSObject, UICollectionViewDataSource {
             
             cell.imageView.image = UIImage(systemName: "questionmark.circle")
             
+            loadingImageCount += 1
+            
             NasaImageProvider.shared.getImage(imageURL: photos[indexPath.row].imgSrc, completion: { image, error in
                 DispatchQueue.main.async {
                     if self.photos.count > indexPath.row {
@@ -33,6 +36,8 @@ final class RoverPhotosDataSource: NSObject, UICollectionViewDataSource {
                             cell.imageView.image = image
                         }
                     }
+                    
+                    self.loadingImageCount -= 1
                 }
             })
         }

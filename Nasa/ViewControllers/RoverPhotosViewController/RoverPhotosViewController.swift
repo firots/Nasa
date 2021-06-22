@@ -41,6 +41,7 @@ final class RoverPhotosViewController: UIViewController {
         
         viewModel.resetAction = { [weak self] in
             self?.dataSource.photos.removeAll()
+            self?.dataSource.loadingImageCount = 0
         }
     }
     

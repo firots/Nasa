@@ -34,7 +34,22 @@ extension RoverPhotosViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if (dataSource.photos.count - indexPath.row == 5 && !viewModel.finished && !viewModel.requesting) {
-            viewModel.fetchNextPage()
+            if dataSource.loadingImageCount == 0 {
+                viewModel.fetchNextPage()
+            } else {
+                tryExtraFetch()
+            }
+        }
+    }
+    
+    func tryExtraFetch() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+            guard let self = self, self.viewModel.finished == false, self.viewModel.requesting == false else { return }
+            if self.dataSource.loadingImageCount == 0 {
+                self.viewModel.fetchNextPage()
+            } else {
+                self.tryExtraFetch()
+            }
         }
     }
 }
